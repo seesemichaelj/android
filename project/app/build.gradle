@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'org.greenrobot.greendao'
 
 def versionMajor = 1
 def versionMinor = 1
 def versionPatch = 7
 def versionBuild = 1
-ext.daggerVersion = '2.6'
+ext.daggerVersion = '2.9'
 ext.playLibVersion = '10.2.0'
 ext.okHttpVersion = '3.4.1'
 ext.supportLibVersion = '25.1.1'
@@ -14,7 +13,7 @@ ext.supportLibVersion = '25.1.1'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.1"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "org.owntracks.android"
@@ -22,6 +21,12 @@ android {
         targetSdkVersion 25
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [eventBusIndex : "org.owntracks.android.EventBusIndex"]
+            }
+        }
     }
 
     buildTypes {
@@ -89,7 +94,11 @@ dependencies {
     compile "com.google.android.gms:play-services-places:${playLibVersion}"
 
     // Utility libraries
+    compile 'org.greenrobot:eventbus-annotation-processor:3.0.1'
+    compile 'com.google.guava:guava:19.0' // needed by Dagger
     compile "com.google.dagger:dagger:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+    provided 'javax.annotation:jsr250-api:1.0'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.google.zxing:android-integration:3.2.1' // Code scanning
     compile 'org.greenrobot:greendao:3.2.0'
@@ -108,17 +117,6 @@ dependencies {
     compile 'com.afollestad.material-dialogs:commons:0.9.1.0'
     compile('com.mikepenz:materialdrawer:5.8.0@aar') { transitive = true }
     compile 'com.mikepenz:materialize:0.8.8@aar'
-
-    // Preprocessors
-    apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
-    apt 'com.google.guava:guava:19.0' // needed by Dagger
-    apt "com.google.dagger:dagger-compiler:${daggerVersion}"
-}
-
-apt {
-    arguments {
-        eventBusIndex "org.owntracks.android.EventBusIndex"
-    }
 }
 
 greendao {
