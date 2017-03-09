@@ -2,6 +2,7 @@ package org.owntracks.android.ui.map;
 
 import android.content.Context;
 import android.databinding.Bindable;
+import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -76,7 +77,7 @@ public class MapViewModel extends BaseViewModel<MapMvvm.View> implements MapMvvm
     }
 
     @Override
-    public List<FusedContact> getContacts() {
+    public ObservableList<FusedContact> getContacts() {
         return this.contactsRepo.getAll();
     }
 
@@ -95,6 +96,14 @@ public class MapViewModel extends BaseViewModel<MapMvvm.View> implements MapMvvm
     @Override
     public void onMarkerClick(@NonNull String contactId) {
         activateContact(contactId, false);
+    }
+
+    public void onQuickContactClick(@NonNull String contactId) {
+        activeContact = contactsRepo.getById(contactId);
+        Timber.v("contactId:%s, obj:%s ", contactId, activeContact);
+
+        notifyPropertyChanged(BR.contact);
+        getView().setModeContact(true);
     }
 
 

@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,6 +43,7 @@ import org.owntracks.android.support.ContactImageProvider;
 import org.owntracks.android.support.Events;
 import org.owntracks.android.ui.base.BaseActivity;
 import org.owntracks.android.ui.base.navigator.Navigator;
+import org.owntracks.android.ui.map.QuickContactsAdapter;
 
 import java.util.WeakHashMap;
 
@@ -49,7 +52,7 @@ import javax.inject.Provider;
 
 import timber.log.Timber;
 
-public class MapActivity extends BaseActivity<UiActivityMapBinding, MapMvvm.ViewModel> implements MapMvvm.View, OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, View.OnClickListener, View.OnLongClickListener, PopupMenu.OnMenuItemClickListener {
+public class MapActivity extends BaseActivity<UiActivityMapBinding, MapMvvm.ViewModel> implements MapMvvm.View, OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener, View.OnClickListener, View.OnLongClickListener, PopupMenu.OnMenuItemClickListener, org.owntracks.android.ui.map.QuickContactsAdapter.ClickListener  {
 
     private static final long ZOOM_LEVEL_STREET = 15;
     public static final String BUNDLE_KEY_CONTACT_ID = "BUNDLE_KEY_CONTACT_ID";
@@ -171,6 +174,10 @@ public class MapActivity extends BaseActivity<UiActivityMapBinding, MapMvvm.View
 
         this.mMapLocationSource = new MapLocationSource();
         binding.mapView.onCreate(savedInstanceState);
+
+        binding.quickContacts.setLayoutManager(new LinearLayoutManager(this));
+        binding.quickContacts.setAdapter(new QuickContactsAdapter(viewModel.getContacts(), this));
+        BottomSheetBehavior.from(binding.quickContacts).setState(BottomSheetBehavior.STATE_EXPANDED);
 
         this.bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetLayout);
         binding.contactPeek.contactRow.setOnClickListener(this);
@@ -490,6 +497,17 @@ public class MapActivity extends BaseActivity<UiActivityMapBinding, MapMvvm.View
     }
 
     // BOTTOM SHEET CALLBACKS
+    @Override
+    public void onClick(@NonNull FusedContact object, @NonNull View view, boolean longClick) {
+        if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED || bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_SETTLING) {
+            return;
+        }
+        viewModel.onQuickContactClick(object.getId());
+        if(longClick) {
+            setBottomSheetExpanded();
+        }
+    }
+
     @Override
     public void onClick(View view) {
         viewModel.onBottomSheetClick();

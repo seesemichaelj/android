@@ -34,6 +34,16 @@
 
         </android.support.design.widget.AppBarLayout>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/quickContacts"
+            android:layout_width="match_parent"
+            android:layout_height="216dp"
+            android:background="@color/background"
+            app:behavior_hideable="false"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            android:elevation="6dp"
+            />
+
         <LinearLayout
             android:id="@+id/bottomSheetLayout"
             android:layout_width="match_parent"
@@ -42,7 +52,7 @@
             android:orientation="vertical"
             app:behavior_hideable="true"
             android:clickable="true"
-            app:behavior_peekHeight="72dp"
+            app:behavior_peekHeight="0dp"
             app:layout_behavior="@string/bottom_sheet_behavior"
             android:elevation="6dp">
 
