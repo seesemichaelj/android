@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@{App.formatDate(vm.contact.fusedLocationDate)}"
+                android:text="@{App.formatDate(vm.contact.fusedLocationDate) + ' ' + App.formatTimeDelta(vm.contact.fusedLocationDate)}"
                 android:paddingLeft="72dp"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_horizontal_margin"

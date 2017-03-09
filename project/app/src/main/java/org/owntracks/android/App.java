@@ -81,9 +81,22 @@ public class App extends Application  {
                 .build();
 
 
-
-        dateFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        dateFormaterToday = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        String timeFormat;
+        String secondsFormat;
+        if(false) {
+            secondsFormat = ":ss";
+        }
+        else {
+            secondsFormat = "";
+        }
+        if(false) {
+            timeFormat = "HH:mm" + secondsFormat;
+        }
+        else {
+            timeFormat = "hh:mm" + secondsFormat + " a";
+        }
+        dateFormater = new SimpleDateFormat("yyyy-MM-dd " + timeFormat, Locale.getDefault());
+        dateFormaterToday = new SimpleDateFormat(timeFormat, Locale.getDefault());
 
         HandlerThread mServiceHandlerThread = new HandlerThread("ServiceThread");
         mServiceHandlerThread.start();
@@ -169,6 +182,50 @@ public class App extends Application  {
             return dateFormater.format(d);
         }
 	}
+
+	public static String formatTimeDelta(long tstSeconds) {
+        long delta = System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(tstSeconds);
+        double seconds = delta / 1000;
+        double minutes = seconds / 60;
+        double hours = minutes / 60;
+        double days = hours / 24;
+
+        String result = "(";
+
+        if(days >= 1) {
+            result += (int) Math.floor(days) + "d";
+            double hoursLeft = hours - (Math.floor(days)*24);
+            if(hoursLeft >= 1) {
+                result += ", " + (int) Math.floor(hoursLeft) + "h";
+            }
+        }
+        else if(hours >= 1) {
+            result += (int) Math.floor(hours) + "h";
+            double minutesLeft = minutes - (Math.floor(hours)*60);
+            if(minutesLeft >= 1) {
+                result += ", " + (int) Math.floor(minutesLeft) + "m";
+            }
+        }
+        else if(minutes >= 1) {
+            result += (int) Math.floor(minutes) + "m";
+            double secondsLeft = seconds - (Math.floor(minutes)*60);
+            if(false && secondsLeft >= 1) { // TODO: Replace false with config of displaying seconds
+                result += ", " + (int) Math.floor(secondsLeft) + "s";
+            }
+        }
+        else if(false && seconds >= 1) { // TODO: Replace false with config of displaying seconds
+            result += (int) Math.floor(seconds) + "s";
+        }
+
+        if(result.compareTo("(") == 0) {
+            result += "now)";
+        }
+        else {
+            result += " ago)";
+        }
+
+        return result;
+    }
 
 	public static String getAndroidId() {
 		return Secure.getString(sInstance.getContentResolver(), Secure.ANDROID_ID);
