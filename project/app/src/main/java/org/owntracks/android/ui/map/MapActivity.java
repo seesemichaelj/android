@@ -365,6 +365,16 @@ public class MapActivity extends BaseActivity<UiActivityMapBinding, MapMvvm.View
         return true;
     }
 
+    @Override
+    public void onBackPressed(){
+        if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED || bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_SETTLING) {
+            setBottomSheetCollapsed();
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+
     // MAP INTERACTION
     private void doCenterDevice() {
         doUpdateCamera(mMapLocationSource.getLatLng(), ZOOM_LEVEL_STREET);
